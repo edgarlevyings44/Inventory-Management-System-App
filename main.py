@@ -5,23 +5,26 @@ from database import (
     add_product,
     get_product_by_id,
     get_warehouse_by_id,
+    get_warehouse_by_address,
     add_inventory,
     add_warehouse,
     delete_product,
     delete_warehouse,
     delete_inventory,
 )
-
 def add_new_product():
     name = input("Enter product name: ")
     description = input("Enter product description: ")
     price = float(input("Enter product price: "))
     warehouse_name = input("Enter warehouse name: ")
     warehouse_address = input("Enter warehouse address: ")
-    warehouse = add_warehouse(warehouse_name, warehouse_address)
+    
+    warehouse = get_warehouse_by_address(warehouse_address)
+    if warehouse is None:
+        warehouse = add_warehouse(warehouse_name, warehouse_address)
+    
     add_product(name, description, price, warehouse)
     print("Product added successfully!")
-
 def update_product():
     product_id = int(input("Enter product ID: "))
     product = get_product_by_id(product_id)
@@ -49,9 +52,8 @@ def delete_warehouse_by_id():
     print("Warehouse deleted successfully!")
 
 def delete_inventory_by_ids():
-    product_id = int(input("Enter product ID: "))
-    warehouse_id = int(input("Enter warehouse ID: "))
-    delete_inventory(product_id, warehouse_id)
+    inventory_id = int(input("Enter inventory ID: "))
+    delete_inventory(inventory_id)
     print("Inventory deleted successfully!")
 
 def add_inventory():
@@ -71,7 +73,7 @@ def main():
     engine = create_engine('sqlite:///inventory.db')
     Session = sessionmaker(bind=engine)
     session = Session()
-
+    
     while True:
         print("\n--- Inventory Management System ---")
         print("1. Add New Product")
@@ -83,6 +85,7 @@ def main():
         print("7. Delete Inventory")
         print("8. Exit")
         choice = input("Enter your choice (1-8): ")
+        
         if choice == "1":
             add_new_product()
         elif choice == "2":
